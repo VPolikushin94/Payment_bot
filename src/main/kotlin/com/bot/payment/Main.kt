@@ -8,7 +8,9 @@ import com.github.kotlintelegrambot.dispatcher.message
 import com.github.kotlintelegrambot.entities.ChatId
 import com.github.kotlintelegrambot.entities.Message
 import com.github.kotlintelegrambot.extensions.filters.Filter
+import com.sun.net.httpserver.HttpServer
 import kotlinx.coroutines.runBlocking
+import java.net.InetSocketAddress
 import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalTime
@@ -28,6 +30,7 @@ var otherTariffMessagesNumber = 0
 val timeZoneId: ZoneId? = TimeZone.getTimeZone("Europe/Moscow").toZoneId()
 
 fun main() {
+    startHttpServer()
     val bot = bot {
         token = System.getenv("BOT_TOKEN") ?: error("No token")
         println("Program is running ")
@@ -125,5 +128,19 @@ private fun sendDailyReport(bot: Bot) {
                         "Кол-во с обратной связью: $feedBackTariffMessagesNumber"
                 ).format(dailyPayments, dailyFeedBackPayments)
     )
+}
+
+
+fun startHttpServer() {
+    val port = System.getenv("PORT")?.toIntOrNull() ?: 8080
+    val server = HttpServer.create(InetSocketAddress(port), 0)
+    server.createContext("/") { exchange ->
+        val response = "Bot is running"
+        exchange.sendResponseHeaders(200, response.toByteArray().size.toLong())
+        exchange.responseBody.use { it.write(response.toByteArray()) }
+    }
+    server.executor = null
+    server.start()
+    println("HTTP server started on port $port")
 }
 
