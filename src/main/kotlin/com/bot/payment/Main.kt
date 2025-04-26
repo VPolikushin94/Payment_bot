@@ -101,7 +101,7 @@ fun startDailyReport(bot: Bot) {
 
 fun getInitialDelay(): Long {
     val now = LocalTime.now(timeZoneId)
-    val target = LocalTime.of(23, 59)
+    val target = LocalTime.of(23, 45)
     val delaySeconds = if (now.isBefore(target)) {
         Duration.between(now, target).seconds
     } else {
