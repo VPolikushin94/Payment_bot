@@ -1,4 +1,4 @@
-package org.bot
+package org.bot.payment
 
 import com.github.kotlintelegrambot.Bot
 import com.github.kotlintelegrambot.bot
@@ -9,12 +9,13 @@ import com.github.kotlintelegrambot.entities.ChatId
 import com.github.kotlintelegrambot.entities.Message
 import com.github.kotlintelegrambot.extensions.filters.Filter
 import kotlinx.coroutines.runBlocking
+import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalTime
 import java.util.regex.Pattern
 import kotlin.concurrent.fixedRateTimer
 
-val CHAT_ID = System.getenv("CHAT_ID")?.toLong() ?: error("No CHAT_ID")
+val CHAT_ID = System.getenv("org.bot.CHAT_ID")?.toLong() ?: error("No org.bot.CHAT_ID")
 const val FEED_BACK_TITLE = "Тариф С моей обраткой"
 
 val chatId = ChatId.fromId(CHAT_ID)
@@ -97,9 +98,9 @@ fun getInitialDelay(): Long {
     val now = LocalTime.now()
     val target = LocalTime.of(23, 59)
     val delaySeconds = if (now.isBefore(target)) {
-        java.time.Duration.between(now, target).seconds
+        Duration.between(now, target).seconds
     } else {
-        java.time.Duration.between(now, target.plusHours(24)).seconds
+        Duration.between(now, target.plusHours(24)).seconds
     }
     return delaySeconds * 1000
 }
