@@ -5,3 +5,6 @@ services:
     plan: free
     buildCommand: ./gradlew build
     startCommand: ./gradlew run
+    envVars:
+      - key: PORT
+        value: 8080
