@@ -1,0 +1,7 @@
+services:
+  - type: web
+    name: telegram-bot
+    env: docker
+    plan: free
+    buildCommand: ./gradlew build
+    startCommand: ./gradlew run
