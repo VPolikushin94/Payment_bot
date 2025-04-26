@@ -15,7 +15,7 @@ import java.time.LocalTime
 import java.util.regex.Pattern
 import kotlin.concurrent.fixedRateTimer
 
-val CHAT_ID = System.getenv("org.bot.CHAT_ID")?.toLong() ?: error("No org.bot.CHAT_ID")
+val CHAT_ID = System.getenv("CHAT_ID")?.toLong() ?: error("No CHAT_ID")
 const val FEED_BACK_TITLE = "Тариф С моей обраткой"
 
 val chatId = ChatId.fromId(CHAT_ID)
