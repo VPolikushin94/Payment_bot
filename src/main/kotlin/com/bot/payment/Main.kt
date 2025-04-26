@@ -12,6 +12,8 @@ import kotlinx.coroutines.runBlocking
 import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalTime
+import java.time.ZoneId
+import java.util.TimeZone
 import java.util.regex.Pattern
 import kotlin.concurrent.fixedRateTimer
 
@@ -23,11 +25,13 @@ val dailyPayments = mutableMapOf<LocalDate, Double>()
 val dailyFeedBackPayments = mutableMapOf<LocalDate, Double>()
 var feedBackTariffMessagesNumber = 0
 var otherTariffMessagesNumber = 0
+val timeZoneId: ZoneId? = TimeZone.getTimeZone("Europe/Moscow").toZoneId()
 
 fun main() {
     val bot = bot {
         token = System.getenv("BOT_TOKEN") ?: error("No token")
-        println("Program is running")
+        println("Program is running ")
+        println(LocalTime.now(timeZoneId).toString())
 
         dispatch {
             command("сумма") {
@@ -49,7 +53,7 @@ fun processMessage(message: Message) {
     if (message.chat.id != CHAT_ID) return
     val text = message.text ?: return
 
-    val today = LocalDate.now()
+    val today = LocalDate.now(timeZoneId)
 
     // Ищем "Payment Amount" и числа
     val paymentAmountPattern = Pattern.compile("Payment Amount.*?(\\d+(\\.\\d+)?)", Pattern.CASE_INSENSITIVE)
@@ -87,8 +91,8 @@ fun startDailyReport(bot: Bot) {
             sendDailyReport(bot)
 
             // Очищаем сумму на следующий день
-            dailyPayments.remove(LocalDate.now())
-            dailyFeedBackPayments.remove(LocalDate.now())
+            dailyPayments.remove(LocalDate.now(timeZoneId))
+            dailyFeedBackPayments.remove(LocalDate.now(timeZoneId))
             otherTariffMessagesNumber = 0
             feedBackTariffMessagesNumber = 0
         }
@@ -96,7 +100,7 @@ fun startDailyReport(bot: Bot) {
 }
 
 fun getInitialDelay(): Long {
-    val now = LocalTime.now()
+    val now = LocalTime.now(timeZoneId)
     val target = LocalTime.of(23, 59)
     val delaySeconds = if (now.isBefore(target)) {
         Duration.between(now, target).seconds
@@ -107,7 +111,7 @@ fun getInitialDelay(): Long {
 }
 
 private fun sendDailyReport(bot: Bot) {
-    val today = LocalDate.now()
+    val today = LocalDate.now(timeZoneId)
     val dailyPayments = dailyPayments.getOrDefault(today, 0.0)
     val dailyFeedBackPayments = dailyFeedBackPayments.getOrDefault(today, 0.0)
 
