@@ -26,11 +26,11 @@ kotlin {
 }
 
 application {
-    mainClass = "org.bot.payment.Mainkt"
+    mainClass = "com.bot.payment.MainKt"
 }
 
 tasks.withType<Jar> {
     manifest {
-        attributes["Main-Class"] = "org.bot.payment.Mainkt"
+        attributes["Main-Class"] = "com.bot.payment.MainKt"
     }
 }

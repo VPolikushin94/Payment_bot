@@ -1,4 +1,4 @@
-package org.bot.payment
+package com.bot.payment
 
 import com.github.kotlintelegrambot.Bot
 import com.github.kotlintelegrambot.bot
@@ -27,6 +27,7 @@ var otherTariffMessagesNumber = 0
 fun main() {
     val bot = bot {
         token = System.getenv("BOT_TOKEN") ?: error("No token")
+        println("Program is running")
 
         dispatch {
             command("сумма") {
