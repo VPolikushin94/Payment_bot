@@ -10,12 +10,14 @@ import com.github.kotlintelegrambot.entities.Message
 import com.github.kotlintelegrambot.extensions.filters.Filter
 import com.sun.net.httpserver.HttpServer
 import kotlinx.coroutines.runBlocking
+import java.net.HttpURLConnection
 import java.net.InetSocketAddress
+import java.net.URL
 import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.ZoneId
-import java.util.TimeZone
+import java.util.*
 import java.util.regex.Pattern
 import kotlin.concurrent.fixedRateTimer
 
@@ -31,6 +33,8 @@ val timeZoneId: ZoneId? = TimeZone.getTimeZone("Europe/Moscow").toZoneId()
 
 fun main() {
     startHttpServer()
+    startSelfPinger()
+
     val bot = bot {
         token = System.getenv("BOT_TOKEN") ?: error("No token")
         println("Program is running ")
@@ -142,5 +146,30 @@ fun startHttpServer() {
     server.executor = null
     server.start()
     println("HTTP server started on port $port")
+}
+
+fun startSelfPinger() {
+    val urlString = System.getenv("SELF_URL") ?: error("No SELF_URL")
+
+    fixedRateTimer(
+        name = "self-pinger",
+        daemon = true,          // не блокировать завершение приложения
+        initialDelay = 0L,      // запуск сразу
+        period = 8 * 60 * 1000L // каждые 8 минут
+    ) {
+        try {
+            val url = URL(urlString)
+            with(url.openConnection() as HttpURLConnection) {
+                requestMethod = "GET"
+                connectTimeout = 5000
+                readTimeout = 5000
+
+                val responseCode = responseCode
+                println("Self-ping response code: $responseCode")
+            }
+        } catch (e: Exception) {
+            println("Self-ping failed: ${e.message}")
+        }
+    }
 }
 
